@@ -42,8 +42,8 @@ export class Game {
         // Set up event listeners
         this.setupEventListeners();
         
-        // Initial render
-        this.render();
+        // Initial render - deferred to ensure canvas is ready
+        requestAnimationFrame(() => this.render());
     }
 
     /**

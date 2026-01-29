@@ -30,8 +30,8 @@ export class Game {
         this.bird = new Bird(this.config);
         // Set up event listeners
         this.setupEventListeners();
-        // Initial render
-        this.render();
+        // Initial render - deferred to ensure canvas is ready
+        requestAnimationFrame(() => this.render());
     }
     /**
      * Sets up keyboard and mouse event listeners
