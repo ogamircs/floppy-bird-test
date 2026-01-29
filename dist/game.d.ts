@@ -43,6 +43,22 @@ export declare class Game {
      */
     private render;
     /**
+     * Draws the background (sky with clouds)
+     */
+    private drawBackground;
+    /**
+     * Draws a cloud shape
+     */
+    private drawCloud;
+    /**
+     * Draws the ground
+     */
+    private drawGround;
+    /**
+     * Draws text with a shadow/outline effect
+     */
+    private drawText;
+    /**
      * Renders the menu screen
      */
     private renderMenu;

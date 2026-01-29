@@ -1,7 +1,7 @@
 import { Bird } from './bird.js';
 import { Pipe } from './pipe.js';
 import { GameState, DEFAULT_CONFIG } from './types.js';
-import { checkCollision, drawGround, drawBackground, drawText } from './utils.js';
+import { checkCollision } from './utils.js';
 /**
  * Main game class that manages the game loop, state, and rendering
  */
@@ -144,13 +144,13 @@ export class Game {
         // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // Draw background
-        drawBackground(this.ctx, this.canvas.width, this.canvas.height);
+        this.drawBackground();
         // Draw pipes
         for (const pipe of this.pipes) {
             pipe.draw(this.ctx);
         }
         // Draw ground
-        drawGround(this.ctx, this.canvas.width, this.canvas.height, this.config.groundHeight);
+        this.drawGround();
         // Draw bird
         this.bird.draw(this.ctx);
         // Draw UI based on game state
@@ -167,20 +167,83 @@ export class Game {
         }
     }
     /**
+     * Draws the background (sky with clouds)
+     */
+    drawBackground() {
+        // Draw gradient sky
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient.addColorStop(0, '#87CEEB');
+        gradient.addColorStop(1, '#E0F6FF');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // Draw some clouds
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        this.drawCloud(50, 80, 40);
+        this.drawCloud(200, 120, 50);
+        this.drawCloud(320, 60, 35);
+        this.drawCloud(150, 200, 30);
+    }
+    /**
+     * Draws a cloud shape
+     */
+    drawCloud(x, y, size) {
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, size * 0.5, 0, Math.PI * 2);
+        this.ctx.arc(x + size * 0.4, y, size * 0.6, 0, Math.PI * 2);
+        this.ctx.arc(x + size * 0.8, y, size * 0.5, 0, Math.PI * 2);
+        this.ctx.arc(x + size * 0.4, y - size * 0.3, size * 0.5, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+    /**
+     * Draws the ground
+     */
+    drawGround() {
+        const groundY = this.canvas.height - this.config.groundHeight;
+        // Draw ground body
+        this.ctx.fillStyle = '#d4a373';
+        this.ctx.fillRect(0, groundY, this.canvas.width, this.config.groundHeight);
+        // Draw grass on top
+        this.ctx.fillStyle = '#2ecc71';
+        this.ctx.fillRect(0, groundY, this.canvas.width, 10);
+        // Draw ground texture lines
+        this.ctx.strokeStyle = '#bc8a5f';
+        this.ctx.lineWidth = 2;
+        for (let i = 0; i < this.canvas.width; i += 30) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(i, groundY + 15);
+            this.ctx.lineTo(i + 15, groundY + 25);
+            this.ctx.stroke();
+        }
+    }
+    /**
+     * Draws text with a shadow/outline effect
+     */
+    drawText(text, x, y, fontSize = 30, color = '#fff', align = 'center') {
+        this.ctx.font = `bold ${fontSize}px 'Segoe UI', Arial, sans-serif`;
+        this.ctx.textAlign = align;
+        // Draw shadow/outline
+        this.ctx.strokeStyle = '#000';
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeText(text, x, y);
+        // Draw text
+        this.ctx.fillStyle = color;
+        this.ctx.fillText(text, x, y);
+    }
+    /**
      * Renders the menu screen
      */
     renderMenu() {
-        drawText(this.ctx, 'FLAPPY BIRD', this.canvas.width / 2, 180, 48, '#f4d03f');
-        drawText(this.ctx, 'Press SPACE or CLICK to Start', this.canvas.width / 2, 300, 20, '#fff');
+        this.drawText('FLAPPY BIRD', this.canvas.width / 2, 180, 48, '#f4d03f');
+        this.drawText('Press SPACE or CLICK to Start', this.canvas.width / 2, 300, 20, '#fff');
         if (this.highScore > 0) {
-            drawText(this.ctx, `High Score: ${this.highScore}`, this.canvas.width / 2, 350, 20, '#fff');
+            this.drawText(`High Score: ${this.highScore}`, this.canvas.width / 2, 350, 20, '#fff');
         }
     }
     /**
      * Renders the score during gameplay
      */
     renderPlaying() {
-        drawText(this.ctx, `${this.score}`, this.canvas.width / 2, 80, 48, '#fff');
+        this.drawText(`${this.score}`, this.canvas.width / 2, 80, 48, '#fff');
     }
     /**
      * Renders the game over screen
@@ -189,10 +252,10 @@ export class Game {
         // Semi-transparent overlay
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        drawText(this.ctx, 'GAME OVER', this.canvas.width / 2, 200, 48, '#e74c3c');
-        drawText(this.ctx, `Score: ${this.score}`, this.canvas.width / 2, 280, 28, '#fff');
-        drawText(this.ctx, `High Score: ${this.highScore}`, this.canvas.width / 2, 320, 24, '#f4d03f');
-        drawText(this.ctx, 'Press SPACE or CLICK to Restart', this.canvas.width / 2, 400, 18, '#fff');
+        this.drawText('GAME OVER', this.canvas.width / 2, 200, 48, '#e74c3c');
+        this.drawText(`Score: ${this.score}`, this.canvas.width / 2, 280, 28, '#fff');
+        this.drawText(`High Score: ${this.highScore}`, this.canvas.width / 2, 320, 24, '#f4d03f');
+        this.drawText('Press SPACE or CLICK to Restart', this.canvas.width / 2, 400, 18, '#fff');
     }
     /**
      * Handles game over state
