@@ -1,0 +1,13 @@
+{
+  "name": "flappy-bird-ts",
+  "version": "1.0.0",
+  "description": "A Flappy Bird game built with TypeScript and HTML5 Canvas",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "serve": "npx http-server . -p 8080 -o"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
